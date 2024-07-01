@@ -14,11 +14,11 @@ const Cart = () => {
         dispatch({type:REMOVE_FROM_CART,payload:productId})
     }
 
-    const handleIncrementCount=(product)=>{
-        dispatch({type:INCREMENT_QUANTITY,payload:product})
+    const handleIncrementCount=(productId)=>{
+        dispatch({type:INCREMENT_QUANTITY,payload:productId})
     }
-    const handleDecrementCount=(product)=>{
-        dispatch({type:DECREMENT_QUANTITY,payload:product})
+    const handleDecrementCount=(productId)=>{
+        dispatch({type:DECREMENT_QUANTITY,payload:productId})
     }
 
     return (

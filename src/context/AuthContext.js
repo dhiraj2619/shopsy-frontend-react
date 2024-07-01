@@ -7,7 +7,6 @@ const initialState = {
     isAuthenticated:false,
     user:null,
     token:null,
-    cart:[],
     error:null
 };
 
@@ -19,7 +18,6 @@ const authReducer=(state,action)=>{
              isAuthenticated:true,
              user:action.payload.user,
              token:action.payload.token,
-             cart:action.payload.cart || [],
              error:null
         }
       
@@ -29,7 +27,6 @@ const authReducer=(state,action)=>{
               isAuthenticated:false,
               user:null,
               token:null,
-              cart:[],
               error:null
          }
       case 'AUTH_ERROR':
@@ -47,7 +44,7 @@ const AuthProvider =({children})=>{
     const [state,dispatch] = useReducer(authReducer,initialState,(initial)=>{
        const token = localStorage.getItem('authToken');
        const user = localStorage.getItem('user');
-       const cart = localStorage.getItem('cart');
+      
 
        if(token && user){
           return{
@@ -55,7 +52,6 @@ const AuthProvider =({children})=>{
             isAuthenticated:true,
             token,
             user:JSON.parse(user),
-            cart:cart ? JSON.parse(cart):[]
           }
        }
 
@@ -65,15 +61,14 @@ const AuthProvider =({children})=>{
     useEffect(()=>{
         const token = localStorage.getItem('authToken');
         const user = localStorage.getItem('user');
-        const cart = localStorage.getItem('cart');
+     
 
         if(user && token){
            dispatch({
              type:'LOGIN',
              payload:{
                token,
-               user:JSON.parse(user),
-               cart:cart ? JSON.parse(cart):[]
+               user:JSON.parse(user)
              }
            })
         }
@@ -82,9 +77,9 @@ const AuthProvider =({children})=>{
     useEffect(()=>{
        localStorage.setItem('authToken',state.token);
        localStorage.setItem('user',JSON.stringify(state.user));
-       localStorage.setItem('cart',JSON.stringify(state.cart));
+      
 
-    },[state.token,state.user,state.cart]);
+    },[state.token,state.user]);
 
     return (
         <AuthContext.Provider value={{state,dispatch}}>

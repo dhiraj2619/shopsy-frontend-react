@@ -1,12 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from '@mui/material'
-import { Products } from '../data/Data'
+// import { Products } from '../data/Data'
 import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 import { ADD_TO_CART, CartContext } from '../context/CartContext'
+import axios from 'axios'
 
 const ProductList = () => {
   
+    const [products,setProducts] = useState([]);
+
+
+    useEffect(()=>{
+       const fetchProducts=async()=>{
+        try {
+            const response = await axios.get('https://shopsy-backend.onrender.com/api/products/allproducts');
+            setProducts(response.data);
+        } catch (error) {
+            console.error("error fetching products",error);
+        }
+    }
+    fetchProducts();
+    },[]);
     const navigate = useNavigate();
 
    const {state,dispatch} = useContext(CartContext);
@@ -15,20 +30,30 @@ const ProductList = () => {
         return Array.isArray(state.cart) && state.cart.some(item => item.id === productId);
     }
 
-    const AddToCart=(product)=>{
-        dispatch({type:ADD_TO_CART,payload:product})
+    const AddToCart=async(product)=>{
+        try {
+             await axios.post('https://shopsy-backend.onrender.com/api/user/cart/add',{productId:product._id},{
+                headers:{
+                    'x-auth-token':localStorage.getItem('authToken')
+                }
+             });
+             dispatch({type:ADD_TO_CART,payload:product})
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+        }
+       
     }
     return (
         <Box mt={10} px={8}>
             <Grid container spacing={5}>
-                {Products.map((product) => {
+                {products.map((product) => {
                     return (
                         <Grid item xs={12} md={3} key={product.id} >
                             <Card border='1' borderColor='#ccc'>
                                 <CardActionArea>
                                     <CardMedia
                                         component="img"
-                                        image={product.imagepath}
+                                        image={`https://shopsy-backend.onrender.com/${product.imagepath.replace(/\\/g, "/")}`}
                                         alt="green iguana"
                                         height={300}
                                     />
